@@ -7,6 +7,22 @@ E = Encoding()
 
 # To create propositions, create classes for them first, annotated with "@proposition" and the Encoding
 @proposition(E)
+class ShipStatus:
+
+    def __init__(self, ship_type):
+        self.ship_type = ship_type
+
+    def __repr__(self):
+        return f"ShipStatus({self.ship_type})"
+
+D = ShipStatus('D')
+S = ShipStatus('S')
+Cr = ShipStatus('Cr')
+B = ShipStatus('B')
+Ca = ShipStatus('Ca')
+
+
+@proposition(E)
 class BasicPropositions:
 
     def __init__(self, data):
