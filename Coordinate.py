@@ -1,15 +1,15 @@
 class Coordinate:
-    def __init__(self, x, y):
+    def __init__(self, x, y) -> None:
         self.x = x
         self.y = y
 
-    def x(self):
+    def x(self) -> int:
         return self.x()
 
-    def y(self):
+    def y(self) -> int:
         return self.y()
 
-    def set(self, other):
+    def set(self, other) -> None:
         if type(other) == Coordinate:
             self.x = other.x
             self.y = other.y
