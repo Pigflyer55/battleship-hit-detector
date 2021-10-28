@@ -3,7 +3,10 @@ from bauhaus import Encoding, proposition, constraint
 from bauhaus.utils import count_solutions, likelihood
 
 # Encoding that will store all of your constraints
+from Coordinate import Coordinate
+
 E = Encoding()
+
 
 # To create propositions, create classes for them first, annotated with "@proposition" and the Encoding
 @proposition(E)
@@ -15,11 +18,26 @@ class ShipStatus:
     def __repr__(self):
         return f"ShipStatus({self.ship_type})"
 
+
 D = ShipStatus('D')
 S = ShipStatus('S')
 Cr = ShipStatus('Cr')
 B = ShipStatus('B')
 Ca = ShipStatus('Ca')
+
+
+@proposition(E)  # Coordinate is a hit
+class Hit(Coordinate):
+
+    def __repr__(self) -> str:
+        return repr(f"({self.x}, {self.y}) is a hit!")
+
+
+@proposition(E)  # Coordinate is a miss/out-of-bounds
+class Miss(Coordinate):
+
+    def __repr__(self) -> str:
+        return repr(f"({self.x}, {self.y}) is a miss.")
 
 
 @proposition(E)
