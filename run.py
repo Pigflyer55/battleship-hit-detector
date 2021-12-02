@@ -7,6 +7,8 @@ import Ship
 
 E = Encoding()
 
+#   Constants
+DIM = 10
 
 # To create propositions, create classes for them first, annotated with "@proposition" and the Encoding
 @proposition(E)  # Ship is active on board (In-game, not yet sunk)
@@ -53,22 +55,30 @@ class Destroyer(Ship):
             j = self.origin.y
             # Permutations 1 - 4 Constraints - If permutation exists, then nearby squares are also occupied.
             if self.config_num == 0:
-                constraint.implies_all(Hit(i, j), Hit(i + 1, j))
+                c1 = Coordinate(i, j)
+                c2 = Coordinate(i+1, j)
+                constraint.implies_all(Hit(c), Hit(c2))
                 #   -
                 # - X x
                 #   -
             elif self.config_num == 1:
-                constraint.implies_all(Hit(i, j), Hit(i - 1, j))
+                c1 = Coordinate(i, j)
+                c2 = Coordinate(i-1, j)
+                constraint.implies_all(Hit(c1), Hit(c2))
                 #   -
                 # x X -
                 #   -
             elif self.config_num == 2:
-                constraint.implies_all(Hit(i, j), Hit(i, j + 1))
+                c1 = Coordinate(i, j)
+                c2 = Coordinate(i, j+1)
+                constraint.implies_all(Hit(c1), Hit(c2))
                 #   -
                 # - X -
                 #   x
             elif self.config_num == 3:
-                constraint.implies_all(Hit(i, j), Hit(i, j - 1))
+                c1 = Coordinate(i, j)
+                c2 = Coordinate(i, j-1)
+                constraint.implies_all(Hit(c1), Hit(c2))
                 #   x
                 # - X -
                 #   -
@@ -92,43 +102,52 @@ class Cruiser(Ship):
             i = self.origin.x
             j = self.origin.y
             # Permutations 1 - 6 Constraints - If permutation exists, then nearby squares are also occupied.
+            c1 = Coordinate(i, j)
+            c2 = Coordinate(i+1, j)
+            c3 = Coordinate(i+2, j)
+            c4 = Coordinate(i-1, j)
+            c5 = Coordinate(i-2, j)
+            c6 = Coordinate(i, j-1)
+            c7 = Coordinate(i, j-2)
+            c8 = Coordinate(i, j+1)
+            c9 = Coordinate(i, j+2)
             if self.config_num == 0:
-                constraint.implies_all(Hit(i, j), Hit(i + 1, j), Hit(i + 2, j))
+                constraint.implies_all(Hit(c1), Hit(c2), Hit(c3))
                 #     -
                 #     -
                 # - - X x x
                 #     -
                 #     -
             elif self.config_num == 1:
-                constraint.implies_all(Hit(i, j), Hit(i - 1, j), Hit(i + 1, j))
+                constraint.implies_all(Hit(c1), Hit(c4), Hit(c2))
                 #     -
                 #     -
                 # - x X x -
                 #     -
                 #     -
             elif self.config_num == 2:
-                constraint.implies_all(Hit(i, j), Hit(i - 2, j), Hit(i - 1, j))
+                constraint.implies_all(Hit(c1), Hit(c5), Hit(c4))
                 #     -
                 #     -
                 # x x X - -
                 #     -
                 #     -
             elif self.config_num == 3:
-                constraint.implies_all(Hit(i, j), Hit(i, j + 1), Hit(i, j + 2))
+                constraint.implies_all(Hit(c1), Hit(c6), Hit(c7))
                 #     -
                 #     -
                 # - - X - -
                 #     x
                 #     x
             elif self.config_num == 4:
-                constraint.implies_all(Hit(i, j), Hit(i, j - 1), Hit(i, j + 1))
+                constraint.implies_all(Hit(c1), Hit(c6), Hit(c8))
                 #     -
                 #     x
                 # - - X - -
                 #     x
                 #     -
             elif self.config_num == 3:
-                constraint.implies_all(Hit(i, j), Hit(i, j - 2), Hit(i, j - 1))
+                constraint.implies_all(Hit(c1), Hit(c8), Hit(c9))
                 #     x
                 #     x
                 # - - X - -
@@ -154,48 +173,58 @@ class Submarine(Ship):
             i = self.origin.x
             j = self.origin.y
             # Permutations 1 - 6 Constraints - If permutation exists, then nearby squares are also occupied.
+            c1 = Coordinate(i, j)
+            c2 = Coordinate(i+1, j)
+            c3 = Coordinate(i+2, j)
+            c4 = Coordinate(i-1, j)
+            c5 = Coordinate(i-2, j)
+            c6 = Coordinate(i, j+1)
+            c7 = Coordinate(i, j+2)
+            c8 = Coordinate(i, j-1)
+            c9 = Coordinate(i, j-2)
             if self.config_num == 0:
-                constraint.implies_all(Hit(i, j), Hit(i + 1, j), Hit(i + 2, j))
+                constraint.implies_all(Hit(c1), Hit(c2), Hit(c3))
                 #     -
                 #     -
                 # - - X x x
                 #     -
                 #     -
             elif self.config_num == 1:
-                constraint.implies_all(Hit(i, j), Hit(i - 1, j), Hit(i + 1, j))
+                constraint.implies_all(Hit(c1), Hit(c4), Hit(c2))
                 #     -
                 #     -
                 # - x X x -
                 #     -
                 #     -
             elif self.config_num == 2:
-                constraint.implies_all(Hit(i, j), Hit(i - 2, j), Hit(i - 1, j))
+                constraint.implies_all(Hit(c1), Hit(c5), Hit(c4))
                 #     -
                 #     -
                 # x x X - -
                 #     -
                 #     -
             elif self.config_num == 3:
-                constraint.implies_all(Hit(i, j), Hit(i, j + 1), Hit(i, j + 2))
+                constraint.implies_all(Hit(c1), Hit(c8), Hit(c9))
                 #     -
                 #     -
                 # - - X - -
                 #     x
                 #     x
             elif self.config_num == 4:
-                constraint.implies_all(Hit(i, j), Hit(i, j - 1), Hit(i, j + 1))
+                constraint.implies_all(Hit(c1), Hit(c6), Hit(c8))
                 #     -
                 #     x
                 # - - X - -
                 #     x
                 #     -
             elif self.config_num == 3:
-                constraint.implies_all(Hit(i, j), Hit(i, j - 2), Hit(i, j - 1))
+                constraint.implies_all(Hit(c1), Hit(c6), Hit(c7))
                 #     x
                 #     x
                 # - - X - -
                 #     -
                 #     -
+
 
         else:
             raise ValueError(f"{config_num} not a valid permutation!")
@@ -216,8 +245,21 @@ class Battleship(Ship):
             i = self.origin.x
             j = self.origin.y
             # Permutations 1 - 8 Constraints - If permutation exists, then nearby squares are also occupied.
+            c1 = Coordinate(i, j)
+            c2 = Coordinate(i+1, j)
+            c3 = Coordinate(i+2, j)
+            c4 = Coordinate(i-1, j)
+            c5 = Coordinate(i-2, j)
+            c6 = Coordinate(i, j+1)
+            c7 = Coordinate(i, j+2)
+            c8 = Coordinate(i, j-1)
+            c9 = Coordinate(i, j-2)
+            c10 = Coordinate(i, j-3)
+            c11 = Coordinate(i, j+3)
+            c12 = Coordinate(i-3, j)
+            c13 = Coordinate(i+3, j)
             if self.config_num == 0:
-                constraint.implies_all(Hit(i, j), Hit(i + 1, j), Hit(i + 2, j), Hit(i + 3, j))
+                constraint.implies_all(Hit(c1), Hit(c2), Hit(c3), Hit(c13))
                 #       -
                 #       -
                 #       -
@@ -226,7 +268,7 @@ class Battleship(Ship):
                 #       -
                 #       -
             elif self.config_num == 1:
-                constraint.implies_all(Hit(i, j), Hit(i - 1, j), Hit(i + 1, j), Hit(i + 2, j))
+                constraint.implies_all(Hit(c1), Hit(c4), Hit(c2), Hit(c3))
                 #       -
                 #       -
                 #       -
@@ -235,7 +277,7 @@ class Battleship(Ship):
                 #       -
                 #       -
             elif self.config_num == 2:
-                constraint.implies_all(Hit(i, j), Hit(i - 2, j), Hit(i - 1, j), Hit(i + 1, j))
+                constraint.implies_all(Hit(c1), Hit(c5), Hit(c4), Hit(c2))
                 #       -
                 #       -
                 #       -
@@ -244,7 +286,7 @@ class Battleship(Ship):
                 #       -
                 #       -
             elif self.config_num == 3:
-                constraint.implies_all(Hit(i, j), Hit(i - 3, j), Hit(i - 2, j), Hit(i - 1, j))
+                constraint.implies_all(Hit(c1), Hit(c12), Hit(c5), Hit(c4))
                 #       -
                 #       -
                 #       -
@@ -253,7 +295,7 @@ class Battleship(Ship):
                 #       -
                 #       -
             elif self.config_num == 4:
-                constraint.implies_all(Hit(i, j), Hit(i, j + 1), Hit(i, j + 2), Hit(i, j + 3))
+                constraint.implies_all(Hit(c1), Hit(c6), Hit(c7), Hit(c11))
                 #       -
                 #       -
                 #       -
@@ -262,7 +304,7 @@ class Battleship(Ship):
                 #       x
                 #       x
             elif self.config_num == 5:
-                constraint.implies_all(Hit(i, j), Hit(i, j - 1), Hit(i, j + 1), Hit(i, j + 2))
+                constraint.implies_all(Hit(c1), Hit(c8), Hit(c6), Hit(c7))
                 #       -
                 #       -
                 #       x
@@ -271,7 +313,7 @@ class Battleship(Ship):
                 #       x
                 #       -
             elif self.config_num == 6:
-                constraint.implies_all(Hit(i, j), Hit(i, j - 2), Hit(i, j - 1), Hit(i, j + 1))
+                constraint.implies_all(Hit(c1), Hit(c9), Hit(c8), Hit(c6))
                 #       -
                 #       x
                 #       x
@@ -280,7 +322,7 @@ class Battleship(Ship):
                 #       -
                 #       -
             elif self.config_num == 7:
-                constraint.implies_all(Hit(i, j), Hit(i, j - 3), Hit(i, j - 2), Hit(i, j - 1))
+                constraint.implies_all(Hit(c1), Hit(c10), Hit(c9), Hit(c8))
                 #       x
                 #       x
                 #       x
@@ -308,8 +350,25 @@ class Carrier(Ship):
             i = self.origin.x
             j = self.origin.y
             # Permutations 1 - 10 Constraints - If permutation exists, then nearby squares are also occupied.
+            c1 = Coordinate(i, j)
+            c2 = Coordinate(i+1, j)
+            c3 = Coordinate(i+2, j)
+            c4 = Coordinate(i+3, j)
+            c5 = Coordinate(i+4, j)
+            c6 = Coordinate(i-1, j)
+            c7 = Coordinate(i-2, j)
+            c8 = Coordinate(i-3, j)
+            c9 = Coordinate(i-4, j)
+            c10 = Coordinate(i, j+1)
+            c11 = Coordinate(i, j+2)
+            c12 = Coordinate(i, j+3)
+            c13 = Coordinate(i, j+4)
+            c14 = Coordinate(i, j-1)
+            c15 = Coordinate(i, j-2)
+            c16 = Coordinate(i, j-3)
+            c17 = Coordinate(i, j-4)
             if self.config_num == 0:
-                constraint.implies_all(Hit(i, j), Hit(i + 1, j), Hit(i + 2, j), Hit(i + 3, j), Hit(i + 4, j))
+                constraint.implies_all(Hit(c1), Hit(c2), Hit(c3), Hit(c4), Hit(c5))
                 #         -
                 #         -
                 #         -
@@ -320,7 +379,7 @@ class Carrier(Ship):
                 #         -
                 #         -
             elif self.config_num == 1:
-                constraint.implies_all(Hit(i, j), Hit(i - 1, j), Hit(i + 1, j), Hit(i + 2, j), Hit(i + 3, j))
+                constraint.implies_all(Hit(c1), Hit(c6), Hit(c2), Hit(c3), Hit(c4))
                 #         -
                 #         -
                 #         -
@@ -331,7 +390,7 @@ class Carrier(Ship):
                 #         -
                 #         -
             elif self.config_num == 2:
-                constraint.implies_all(Hit(i, j), Hit(i - 2, j), Hit(i - 1, j), Hit(i + 1, j), Hit(i + 2, j))
+                constraint.implies_all(Hit(c1), Hit(c7), Hit(c6), Hit(c2), Hit(c3))
                 #         -
                 #         -
                 #         -
@@ -342,7 +401,7 @@ class Carrier(Ship):
                 #         -
                 #         -
             elif self.config_num == 3:
-                constraint.implies_all(Hit(i, j), Hit(i - 3, j), Hit(i - 2, j), Hit(i - 1, j), Hit(i + 1, j))
+                constraint.implies_all(Hit(c1), Hit(c8), Hit(c7), Hit(c6), Hit(c2))
                 #         -
                 #         -
                 #         -
@@ -353,7 +412,7 @@ class Carrier(Ship):
                 #         -
                 #         -
             elif self.config_num == 4:
-                constraint.implies_all(Hit(i, j), Hit(i - 4, j), Hit(i - 3, j), Hit(i - 2, j), Hit(i - 1, j))
+                constraint.implies_all(Hit(c1), Hit(c6), Hit(c7), Hit(c8), Hit(c9))
                 #         -
                 #         -
                 #         -
@@ -364,7 +423,7 @@ class Carrier(Ship):
                 #         -
                 #         -
             elif self.config_num == 5:
-                constraint.implies_all(Hit(i, j), Hit(i, j + 1), Hit(i, j + 2), Hit(i, j + 3), Hit(i, j + 4))
+                constraint.implies_all(Hit(c1), Hit(c10), Hit(c11), Hit(c12), Hit(c13))
                 #         -
                 #         -
                 #         -
@@ -375,7 +434,7 @@ class Carrier(Ship):
                 #         x
                 #         x
             elif self.config_num == 6:
-                constraint.implies_all(Hit(i, j), Hit(i, j - 1), Hit(i, j + 1), Hit(i, j + 2), Hit(i, j + 3))
+                constraint.implies_all(Hit(c1), Hit(c14), Hit(c10), Hit(c11), Hit(c12))
                 #         -
                 #         -
                 #         -
@@ -386,7 +445,7 @@ class Carrier(Ship):
                 #         x
                 #         -
             elif self.config_num == 7:
-                constraint.implies_all(Hit(i, j), Hit(i, j - 2), Hit(i, j - 1), Hit(i, j + 1), Hit(i, j + 2))
+                constraint.implies_all(Hit(c1), Hit(c15), Hit(c14), Hit(c10), Hit(c11))
                 #         -
                 #         -
                 #         x
@@ -397,7 +456,7 @@ class Carrier(Ship):
                 #         -
                 #         -
             elif self.config_num == 8:
-                constraint.implies_all(Hit(i, j), Hit(i, j - 3), Hit(i, j - 2), Hit(i, j - 1), Hit(i, j + 1))
+                constraint.implies_all(Hit(c1), Hit(c16), Hit(c15), Hit(c14), Hit(c10))
                 #         -
                 #         x
                 #         x
@@ -408,7 +467,7 @@ class Carrier(Ship):
                 #         -
                 #         -
             elif self.config_num == 9:
-                constraint.implies_all(Hit(i, j), Hit(i, j - 4), Hit(i, j - 3), Hit(i, j - 2), Hit(i, j - 1))
+                constraint.implies_all(Hit(c1), Hit(c17), Hit(c16), Hit(c15), Hit(c14))
                 #         x
                 #         x
                 #         x
@@ -425,26 +484,30 @@ class Carrier(Ship):
     def __repr__(self) -> str:
         return repr(f"Ship: Carrier \nPermutation #: {self.config_num} \n Anchor Point: ({repr(self.origin)})")
 
-
 # Constraint - Ships cannot overlap; any point can only be occupied by one ship permutation.
-def permutations(coord):
-    perms_list = []
-    for i in range(0, 4):
-        perms_list.append(Destroyer(coord, i))
-    for i in range(0, 6):
-        perms_list.append(Cruiser(coord, i))
-    for i in range(0, 6):
-        perms_list.append(Submarine(coord, i))
-    for i in range(0, 8):
-        perms_list.append(Battleship(coord, i))
-    for i in range(0, 10):
-        perms_list.append(Carrier(coord, i))
-    constraint.add_exactly_one(E, *perms_list)
+for x in range(1, DIM + 1):
+    for y in range(1, DIM + 1):
+        coord = Coordinate(x, y);
+        perms_list = []
+        for i in range(0, 4):
+            perms_list.append(Destroyer(coord, i))
+        for i in range(0, 6):
+            perms_list.append(Cruiser(coord, i))
+        for i in range(0, 6):
+            perms_list.append(Submarine(coord, i))
+        for i in range(0, 8):
+            perms_list.append(Battleship(coord, i))
+        for i in range(0, 10):
+            perms_list.append(Carrier(coord, i))
+        constraint.add_exactly_one(E, *perms_list)
 
 
 # Constraint - No point can be both a hit and a miss.
-def nand(coord):
-    constraint.add(~(Hit(coord) & Miss(coord)))
+for x in range(1, DIM + 1):
+    for y in range(1, DIM + 1):
+        c = Coordinate (x, y)
+        constraint.add(~(Hit(c) & Miss(c)))
+
 
 
 @proposition(E)
