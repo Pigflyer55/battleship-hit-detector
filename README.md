@@ -2,7 +2,7 @@
 
 Welcome to the major project for CISC/CMPE 204 (Fall 2021)!
 
-Change this README.md file to summarize your project (few sentences at most), and provide pointers to the general structure of the repository. How you organize and build things (which files, how you structure things, etc) is entirely up to you! The only things you must keep in place are what is already listed in the **Structure** section below.
+Our project consists of finding the best tile to attack in order to get a hit. Our model merely provides a suggestion based on all the possible states of the board and there are still chances for this model to attack tiles that do not contain a ship. We use the permutations of the active ships on the board as well as the board setup that the user manually inputs. This model assumes all data entered has come from a possible board state. Using an impossible board state can create undesired results.
 
 ## Structure
 
