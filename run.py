@@ -10,22 +10,25 @@ from bauhaus.utils import count_solutions, likelihood
 from Coordinate import Coordinate
 from permutations import SHIPS
 from visuals import visual
+from board_reader import to_board, params
 import math, sys, time
 
 sys.setrecursionlimit(10000)
 
 E = Encoding()
 
-#   Constants
+#   CONSTANTS
 DIM = 10
+#   Change this if you want a different txt file used
+BOARD_FILE = 'boards/battleship.txt'
 
 # Probably could have used a list instead
 ship_Name = {
-    "dd": "destroyer",
-    "cr": "cruiser",
-    "ss": "submarine",
-    "bb": "battleship.txt",
-    "cv": "carrier"
+    "D": "destroyer",
+    "Cr": "cruiser",
+    "S": "submarine",
+    "Ba": "battleship",
+    "Ca": "carrier"
 }
 
 
@@ -50,7 +53,7 @@ dict_status = {
     "destroyer": D,
     "cruiser": S,
     "submarine": Cr,
-    "battleship.txt": B,
+    "battleship": B,
     "carrier": Ca
 }
 
@@ -131,7 +134,9 @@ def perm_truth(hit_detect, board):
         check = True
         if board[ship.coord.y][ship.coord.x] == "-":
             if len(perm) != 1:
+                #To get the center point of a permutation
                 adjust = math.floor(len(perm) / 2)
+                #Loops through and retrieve the tiles that the permutation exists on
                 for x in range(len(perm)):
                     if perm[x][0] == "X":
                         if (ship.coord.x + x - adjust) < 0 or (ship.coord.x + x - adjust) > (DIM - 1):
@@ -142,7 +147,9 @@ def perm_truth(hit_detect, board):
                             coords.append(miss_board[ship.coord.y][ship.coord.x + x - adjust])
                             hits.append(hit_board[ship.coord.y][ship.coord.x + x - adjust])
             if len(perm[0]) != 1:
+                #To get the center point of a permutation
                 adjust = math.floor(len(perm[0]) / 2)
+                #Loops through and retrieve the tiles that the permutation exists on
                 for y in range(len(perm[0])):
                     if perm[0][y] == "X":
                         if (ship.coord.y + y - adjust) < 0 or (ship.coord.y + y - adjust) > (DIM - 1):
@@ -156,7 +163,9 @@ def perm_truth(hit_detect, board):
             E.add_constraint(~ship)
             check = False
 
-        # A hit on the board would implies that the permutation should exist on top of that hit.
+        # A hit on the board would imply that the permutation should exist on top of that hit.
+        # otherwise the permutation only has to worry about the ship status being true and that
+        # it does not exist on any miss tiles
         if check == True:
             if len(coords) == 2:
                 if hit_detect == False:
@@ -207,10 +216,18 @@ def config_board(board):
                 E.add_constraint(~miss_board[y][x] & ~hit_board[y][x])
     perm_truth(hit_detect, board)
 
-
-def example_theory(board, status_false):
+#Creates constraints for the ships that do not exist
+def example_theory(board, status_false, active):
     config_board(board)
-    print(status_false, "not active on the board")
+
+    for status in status_false:
+        print(status + ",", end=" ")
+    print("are not active on the board")
+
+    for status in active:
+        print(ship_Name[status] + ",", end=" ")
+    print("are active on the board")
+
     for ship in dict_status.keys():
         found = False
         for status in status_false:
@@ -224,37 +241,24 @@ def example_theory(board, status_false):
 
 
 if __name__ == "__main__":
+    #A list representation of the  game board
     board = []
     print("X represents a hit on an unknown ship, O represents a miss or a sunken ship, - is a non attacked tile")
-    for y in range(DIM):
-        row = []
-        for x in range(DIM):
-            user_input = ""
-            while user_input != "-" and user_input != "O" and user_input != "X":
-                print("Enter the state of coordinate (", x, ",", y, ") as either X, O, or -")
-                user_input = input()
-                if user_input != "-" and user_input != "X" and user_input != "O":
-                    print("Please enter a correct state")
-            row.append(user_input)
-        board.append(row)
+    board = to_board(BOARD_FILE)
 
     # A list of all the ships that have been destroyed.
     status_false = []
-    print("Answer either Y or N for the following questions")
-    for ship in ship_Name.values():
-        ship_status = ""
-        while ship_status != "Y" and ship_status != "N":
-            print("Is", ship, "active on the board?")
-            ship_status = input()
-            if ship_status != "Y" and ship_status != "N":
-                print("Please only enter Y or N")
-        if ship_status == "N":
-            status_false.append(ship)
+    alive_ships = params(BOARD_FILE)
+    for ship in ship_Name.keys():
+        found = False
+        for alive in alive_ships:
+            if alive == ship:
+                found = True
+        if found == False:
+            status_false.append(ship_Name[ship])
 
-    print(
-        "Please wait while we load a solution. This could take a couple minutes. Go get a drink or a snack while you wait.")
-
-    T = example_theory(board, status_false)
+    T = example_theory(board, status_false, alive_ships)
+    print("Please wait while we load a solution. This could take a couple minutes. Go get a drink or a snack while you wait.")
     # Don't compile until you're finished adding all your constraints!
     t = time.time()
     T = T.compile()

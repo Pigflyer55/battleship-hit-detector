@@ -19,9 +19,6 @@ def params(txt):
         ships = file.readline()
         ships = ships.rstrip('\n')
         ships = ships.split(", ")
-        print(ships)
         return ships
 
 
-print(to_board('boards/battleship.txt'))
-print(params('boards/battleship.txt'))

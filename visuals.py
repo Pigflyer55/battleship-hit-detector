@@ -12,7 +12,7 @@ def visual(sol, DIM, all_perms, board):
         if sol[perm]:
             count[perm.coord.y][perm.coord.x] += 1
     
-    highest = 0
+    highest = 1
     best_tiles = []
     for y in range(DIM):
         for x in range(DIM):
