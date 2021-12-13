@@ -43,6 +43,6 @@ def visual(sol, DIM, all_perms, board):
             print(board[x][y] + " ", end=" ")
             if y == (DIM - 1):
                 print("\n")
-
+    
     #Uncomment the line below to see the amount of valid permutations that can exist on each tile
     #print(count)

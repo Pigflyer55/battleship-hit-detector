@@ -57,7 +57,7 @@ dict_status = {
 class Hit:
 
     def __init__(self, coord):
-        self.Coord = coord
+        self.coord = coord
 
     def __repr__(self) -> str:
         return repr(f"({self.coord.x}, {self.coord.y}) is a hit!")
@@ -94,7 +94,7 @@ class ShipPerm:
         self.ship_type = ship_type
 
     def  __repr__(self) -> str:
-        return f"ShipPerm({self.coord.x}, {self.coord.y}, {self.config_num}, {SHIPS[self.ship_type][self.config_num]})\n"
+        return f"ShipPerm({self.coord.x}, {self.coord.y}, {self.ship_type}, {SHIPS[self.ship_type][self.config_num]})\n"
 
 all_perms = []
 
@@ -152,12 +152,15 @@ def perm_truth(hit_detect, board):
             check = False
 
         if check == True:
+            #if ship.coord.x == 4 and ship.coord.y == 1:
+                #print(coords)
             if len(coords) == 2:
                 if hit_detect == False:
                     E.add_constraint(dict_status[ship.ship_type] >> ((~coords[0] & ~coords[1]) >> ship))
                 else:
                     E.add_constraint(dict_status[ship.ship_type] >> 
                     (((~coords[0] & ~coords[1]) & (hits[0] | hits[1])) >> ship))
+                    #print(dict_status[ship.ship_type])
 
             elif len(coords) == 3:
                 if hit_detect == False:
@@ -184,8 +187,8 @@ def perm_truth(hit_detect, board):
 #Establishes if misses or hits are true at a tile
 def config_board(board):
     hit_detect = False
-    for x in range(DIM):
-        for y in range(DIM):  
+    for y in range(DIM):
+        for x in range(DIM):  
             if board[y][x] == 'X':
                 hit_detect = True
                 E.add_constraint(hit_board[y][x])
@@ -201,7 +204,7 @@ def config_board(board):
 
 def example_theory(board, status_false):
     config_board(board)
-
+    print(status_false, "not active on the board")
     for ship in dict_status.keys():
         found = False
         for status in status_false:
@@ -239,7 +242,7 @@ if __name__ == "__main__":
             ship_status = input()
             if ship_status != "Y" and ship_status != "N":
                 print("Please only enter Y or N")
-        if ship_status == "n":
+        if ship_status == "N":
             status_false.append(ship)
 
     print("Please wait while we load a solution. This could take a couple minutes. Go get a drink or a snack while you wait.")
@@ -257,8 +260,9 @@ if __name__ == "__main__":
         #print("# Solutions: %d" % count_solutions(T))
         #E.introspect()
         #E.pprint(T, T.solve())
-        #print_theory(T.solve())
-        visual(T.solve(), DIM, all_perms, board)
+        sol = T.solve()
+        #print_theory(sol)
+        visual(sol, DIM, all_perms, board)
         print("Time to complete: %.2f seconds" % (time.time() - t))
     else:
         print("No solution found")
