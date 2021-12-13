@@ -1,6 +1,6 @@
-#TODO
-#Set that negated misses imply a permutation
-#Possibly add constraints for negated misses
+# TODO
+# Set that negated misses imply a permutation
+# Possibly add constraints for negated misses
 
 from os import system
 from bauhaus import Encoding, proposition, constraint, utils, print_theory
@@ -19,14 +19,15 @@ E = Encoding()
 #   Constants
 DIM = 10
 
-#Probably could have used a list instead
+# Probably could have used a list instead
 ship_Name = {
     "dd": "destroyer",
     "cr": "cruiser",
     "ss": "submarine",
-    "bb": "battleship",
+    "bb": "battleship.txt",
     "cv": "carrier"
 }
+
 
 # To create propositions, create classes for them first, annotated with "@proposition" and the Encoding
 @proposition(E)  # Ship is active on board (In-game, not yet sunk)
@@ -49,9 +50,10 @@ dict_status = {
     "destroyer": D,
     "cruiser": S,
     "submarine": Cr,
-    "battleship": B,
+    "battleship.txt": B,
     "carrier": Ca
 }
+
 
 @proposition(E)  # Coordinate is a hit
 class Hit:
@@ -62,11 +64,12 @@ class Hit:
     def __repr__(self) -> str:
         return repr(f"({self.coord.x}, {self.coord.y}) is a hit!")
 
+
 hit_board = []
 for y in range(DIM):
     hit_col = []
-    for x in range (DIM):
-        hit_col.append(Hit(Coordinate(x,y)))
+    for x in range(DIM):
+        hit_col.append(Hit(Coordinate(x, y)))
     hit_board.append(hit_col)
 
 
@@ -79,12 +82,14 @@ class Miss:
     def __repr__(self) -> str:
         return repr(f'({self.coord.x}, {self.coord.y}) is a miss.')
 
+
 miss_board = []
 for y in range(DIM):
     miss_col = []
-    for x in range (DIM):
-        miss_col.append(Miss(Coordinate(x,y)))
+    for x in range(DIM):
+        miss_col.append(Miss(Coordinate(x, y)))
     miss_board.append(miss_col)
+
 
 @proposition(E)
 class ShipPerm:
@@ -93,30 +98,31 @@ class ShipPerm:
         self.config_num = config_num
         self.ship_type = ship_type
 
-    def  __repr__(self) -> str:
+    def __repr__(self) -> str:
         return f"ShipPerm({self.coord.x}, {self.coord.y}, {self.ship_type}, {SHIPS[self.ship_type][self.config_num]})\n"
+
 
 all_perms = []
 
-#Makes propositions for ship permutations at every (x,y) on the board.
+# Makes propositions for ship permutations at every (x,y) on the board.
 for ship in ship_Name.values():
     for i in range(len(SHIPS[ship])):
         for x in range(DIM):
             for y in range(DIM):
-                coord = Coordinate(x,y)
+                coord = Coordinate(x, y)
                 perm = ShipPerm(coord, i, ship)
                 all_perms.append(perm)
                 E.add_constraint(~dict_status[ship] >> ~perm)
-
 
 # Constraint - No point can be both a hit and a miss.
 for x in range(DIM):
     for y in range(DIM):
         E.add_constraint(~hit_board[y][x] | ~miss_board[y][x])
 
-#Constraint
-#A ship being alive implies no misses at specific coordinates which imply a permutation and permutations can not be out of bounds
-#Honestly this constraint is pretty long
+
+# Constraint
+# A ship being alive implies no misses at specific coordinates which imply a permutation and permutations can not be out of bounds
+# Honestly this constraint is pretty long
 def perm_truth(hit_detect, board):
     for ship in all_perms:
         perm = SHIPS[ship.ship_type][ship.config_num]
@@ -125,7 +131,7 @@ def perm_truth(hit_detect, board):
         check = True
         if board[ship.coord.y][ship.coord.x] == "-":
             if len(perm) != 1:
-                adjust = math.floor(len(perm)/2)
+                adjust = math.floor(len(perm) / 2)
                 for x in range(len(perm)):
                     if perm[x][0] == "X":
                         if (ship.coord.x + x - adjust) < 0 or (ship.coord.x + x - adjust) > (DIM - 1):
@@ -136,7 +142,7 @@ def perm_truth(hit_detect, board):
                             coords.append(miss_board[ship.coord.y][ship.coord.x + x - adjust])
                             hits.append(hit_board[ship.coord.y][ship.coord.x + x - adjust])
             if len(perm[0]) != 1:
-                adjust = math.floor(len(perm[0])/2)
+                adjust = math.floor(len(perm[0]) / 2)
                 for y in range(len(perm[0])):
                     if perm[0][y] == "X":
                         if (ship.coord.y + y - adjust) < 0 or (ship.coord.y + y - adjust) > (DIM - 1):
@@ -150,42 +156,46 @@ def perm_truth(hit_detect, board):
             E.add_constraint(~ship)
             check = False
 
-        #A hit on the board would implies that the permutation should exist on top of that hit.
+        # A hit on the board would implies that the permutation should exist on top of that hit.
         if check == True:
             if len(coords) == 2:
                 if hit_detect == False:
                     E.add_constraint(dict_status[ship.ship_type] >> ((~coords[0] & ~coords[1]) >> ship))
                 else:
-                    E.add_constraint(dict_status[ship.ship_type] >> 
-                    (((~coords[0] & ~coords[1]) & (hits[0] | hits[1])) >> ship))
+                    E.add_constraint(dict_status[ship.ship_type] >>
+                                     (((~coords[0] & ~coords[1]) & (hits[0] | hits[1])) >> ship))
 
             elif len(coords) == 3:
                 if hit_detect == False:
                     E.add_constraint(dict_status[ship.ship_type] >> ((~coords[0] & ~coords[1] & ~coords[2]) >> ship))
                 else:
-                    E.add_constraint(dict_status[ship.ship_type] >> 
-                    (((~coords[0] & ~coords[1] & ~coords[2]) & (hits[0] | hits[1] | hits[2])) >> ship))
+                    E.add_constraint(dict_status[ship.ship_type] >>
+                                     (((~coords[0] & ~coords[1] & ~coords[2]) & (hits[0] | hits[1] | hits[2])) >> ship))
 
             elif len(coords) == 4:
                 if hit_detect == False:
-                    E.add_constraint(dict_status[ship.ship_type] >> ((~coords[0] & ~coords[1] & ~coords[2] & ~coords[3]) >> ship))
+                    E.add_constraint(
+                        dict_status[ship.ship_type] >> ((~coords[0] & ~coords[1] & ~coords[2] & ~coords[3]) >> ship))
                 else:
-                    E.add_constraint(dict_status[ship.ship_type] >> 
-                    (((~coords[0] & ~coords[1] & ~coords[2] & ~coords[3]) & (hits[0] | hits[1] | hits[2] | hits[3])) >> ship))
+                    E.add_constraint(dict_status[ship.ship_type] >>
+                                     (((~coords[0] & ~coords[1] & ~coords[2] & ~coords[3]) & (
+                                                 hits[0] | hits[1] | hits[2] | hits[3])) >> ship))
 
             elif len(coords) == 5:
                 if hit_detect == False:
-                    E.add_constraint(dict_status[ship.ship_type] >> ((~coords[0] & ~coords[1] & ~coords[2] & ~coords[3] & ~coords[4]) >> ship))
+                    E.add_constraint(dict_status[ship.ship_type] >> (
+                                (~coords[0] & ~coords[1] & ~coords[2] & ~coords[3] & ~coords[4]) >> ship))
                 else:
-                    E.add_constraint(dict_status[ship.ship_type] >> 
-                    (((~coords[0] & ~coords[1] & ~coords[2] & ~coords[3] & ~coords[4]) & (hits[0] | hits[1] | hits[2] | hits[3] | hits[4])) >> ship))
-                
+                    E.add_constraint(dict_status[ship.ship_type] >>
+                                     (((~coords[0] & ~coords[1] & ~coords[2] & ~coords[3] & ~coords[4]) & (
+                                                 hits[0] | hits[1] | hits[2] | hits[3] | hits[4])) >> ship))
 
-#Establishes if misses or hits are true at a tile
+
+# Establishes if misses or hits are true at a tile
 def config_board(board):
     hit_detect = False
     for y in range(DIM):
-        for x in range(DIM):  
+        for x in range(DIM):
             if board[y][x] == 'X':
                 hit_detect = True
                 E.add_constraint(hit_board[y][x])
@@ -196,7 +206,6 @@ def config_board(board):
             else:
                 E.add_constraint(~miss_board[y][x] & ~hit_board[y][x])
     perm_truth(hit_detect, board)
-        
 
 
 def example_theory(board, status_false):
@@ -213,6 +222,7 @@ def example_theory(board, status_false):
 
     return E
 
+
 if __name__ == "__main__":
     board = []
     print("X represents a hit on an unknown ship, O represents a miss or a sunken ship, - is a non attacked tile")
@@ -221,28 +231,28 @@ if __name__ == "__main__":
         for x in range(DIM):
             user_input = ""
             while user_input != "-" and user_input != "O" and user_input != "X":
-                print("Enter the state of coordinate (", x,",",y,") as either X, O, or -")
+                print("Enter the state of coordinate (", x, ",", y, ") as either X, O, or -")
                 user_input = input()
                 if user_input != "-" and user_input != "X" and user_input != "O":
                     print("Please enter a correct state")
             row.append(user_input)
         board.append(row)
 
-
-    #A list of all the ships that have been destroyed.
+    # A list of all the ships that have been destroyed.
     status_false = []
     print("Answer either Y or N for the following questions")
     for ship in ship_Name.values():
         ship_status = ""
         while ship_status != "Y" and ship_status != "N":
-            print("Is",ship,"active on the board?")
+            print("Is", ship, "active on the board?")
             ship_status = input()
             if ship_status != "Y" and ship_status != "N":
                 print("Please only enter Y or N")
         if ship_status == "N":
             status_false.append(ship)
 
-    print("Please wait while we load a solution. This could take a couple minutes. Go get a drink or a snack while you wait.")
+    print(
+        "Please wait while we load a solution. This could take a couple minutes. Go get a drink or a snack while you wait.")
 
     T = example_theory(board, status_false)
     # Don't compile until you're finished adding all your constraints!

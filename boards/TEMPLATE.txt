@@ -1,0 +1,16 @@
+FIRST LINE: all living ships on board, separated by ", "
+ALL SUBSEQUENT LINES: string representation of board, using -, X, and O. Examples:
+OOOOO
+O---O
+O-X-O
+O---O
+OOOOO
+
+---
+-X-
+---
+
+---OOO
+O---OO
+OO---O
+OOO---

@@ -244,6 +244,6 @@ SHIPS = {
     "destroyer": destroyer,     
     "submarine": submarine,     
     "cruiser": cruiser,         
-    "battleship": battleship,   
+    "battleship.txt": battleship,
     "carrier": carrier          
 }
