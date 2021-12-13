@@ -113,7 +113,6 @@ for ship in ship_Name.values():
 for x in range(DIM):
     for y in range(DIM):
         E.add_constraint(~hit_board[y][x] | ~miss_board[y][x])
-        #E.add_constraint(~miss_board[x][y])
 
 #Constraint
 #A ship being alive implies no misses at specific coordinates which imply a permutation and permutations can not be out of bounds
@@ -151,16 +150,14 @@ def perm_truth(hit_detect, board):
             E.add_constraint(~ship)
             check = False
 
+        #A hit on the board would implies that the permutation should exist on top of that hit.
         if check == True:
-            #if ship.coord.x == 4 and ship.coord.y == 1:
-                #print(coords)
             if len(coords) == 2:
                 if hit_detect == False:
                     E.add_constraint(dict_status[ship.ship_type] >> ((~coords[0] & ~coords[1]) >> ship))
                 else:
                     E.add_constraint(dict_status[ship.ship_type] >> 
                     (((~coords[0] & ~coords[1]) & (hits[0] | hits[1])) >> ship))
-                    #print(dict_status[ship.ship_type])
 
             elif len(coords) == 3:
                 if hit_detect == False:
@@ -218,7 +215,7 @@ def example_theory(board, status_false):
 
 if __name__ == "__main__":
     board = []
-    print("X represents a hit on an unkown ship, O represents a miss or a sunken ship, - is a non attacked tile")
+    print("X represents a hit on an unknown ship, O represents a miss or a sunken ship, - is a non attacked tile")
     for y in range(DIM):
         row = []
         for x in range(DIM):
@@ -257,11 +254,7 @@ if __name__ == "__main__":
     print("\nSatisfiable: %s" % check)
     if check == True:
         print("Hang on a bit longer. A solution has almost been obtained.")
-        #print("# Solutions: %d" % count_solutions(T))
-        #E.introspect()
-        #E.pprint(T, T.solve())
         sol = T.solve()
-        #print_theory(sol)
         visual(sol, DIM, all_perms, board)
         print("Time to complete: %.2f seconds" % (time.time() - t))
     else:
