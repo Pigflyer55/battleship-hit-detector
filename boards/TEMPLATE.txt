@@ -1,16 +1,40 @@
-FIRST LINE: all living ships on board, separated by ", "
+FIRST LINE: all living ships on board, separated by ", ". Ships identified as: D, Cr, S, Ba, Ca
+D = Destroyer, Cr = Cruiser, S = Submarine, Ba = Battleship, Ca = Carrier
 ALL SUBSEQUENT LINES: string representation of board, using -, X, and O. Examples:
-OOOOO
-O---O
-O-X-O
-O---O
-OOOOO
+MAKE SURE THERE ARE 10 ROWS AND 10 COLUMNS
 
----
--X-
----
+D
+OOOOOOOOOO
+OOOO---OOO
+OOOO-X-OOO
+OOOO---OOO
+OOOOOOOOOO
+OOOOOOOOOO
+OOOOOOOOOO
+OOOOOOOOOO
+OOOOOOOOOO
+OOOOOOOOOO
 
----OOO
-O---OO
-OO---O
-OOO---
+D, Ca, Ba, Cr, S
+----------
+----------
+-----X----
+----------
+----------
+----------
+----------
+----------
+----------
+----------
+
+D, Cr, S
+O---OOOOOO
+OO---OOOOO
+OOO---OOOO
+OOOO---OOO
+OOOOO---OO
+OOOO---OOO
+OOO---OOOO
+OO---OOOOO
+O---OOOOOO
+---OOOOOOO

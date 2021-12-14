@@ -19,6 +19,7 @@ E = Encoding()
 
 #   CONSTANTS
 DIM = 10
+
 #   Change this if you want a different txt file used
 BOARD_FILE = 'boards/battleship.txt'
 
@@ -246,13 +247,34 @@ if __name__ == "__main__":
     print("X represents a hit on an unknown ship, O represents a miss or a sunken ship, - is a non attacked tile")
     board = to_board(BOARD_FILE)
 
+    # Error catching
+    # Board can not be empty
+    if len(board) != 10:
+        sys.exit("Board must be a 10 x 10")
+
+    # Board can not have empty rows and all rows must be same length
+    for row in range(0, len(board)):
+        if len(board[row]) != 10:
+            sys.exit("Board must be a 10 x 10")
+            
+            
     # A list of all the ships that have been destroyed.
     status_false = []
     alive_ships = params(BOARD_FILE)
+    for alive in alive_ships:
+        found = False
+        save_ship = ""
+        for ship in ship_Name.keys():
+            if ship == alive:
+                found = True
+                save_ship = ship
+        if found == False:
+            sys.exit("Unidentified ship \"" + alive + "\" entered")
+
     for ship in ship_Name.keys():
         found = False
         for alive in alive_ships:
-            if alive == ship:
+            if ship == alive:
                 found = True
         if found == False:
             status_false.append(ship_Name[ship])
